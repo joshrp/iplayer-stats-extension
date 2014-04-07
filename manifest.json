@@ -7,11 +7,15 @@
 
   "permissions": [
     "activeTab",
-    "http://www.bbc.co.uk/iplayer*"
+    "http://*.bbc.co.uk/iplayer*",
+    "http://*.bbc.co.uk/bbcone*"
   ],
   "content_scripts": [
     {
-      "matches": ["http://www.bbc.co.uk/iplayer*"],
+      "matches": [
+        "http://*.bbc.co.uk/iplayer",
+        "http://*.bbc.co.uk/bbcone"
+      ],
       "js": ["jquery.2.10.js"]
     }
   ],
