@@ -4,10 +4,10 @@
 	left:8px;
 	bottom:8px;
 	right:8px;
-	border: 3px solid rgba(30,30,70,1);
 	text-align:center;
 	background:rgba(80,80,100,0.9);
 	z-index:100000;
+	background: radial-gradient(ellipse at center, rgba(245,73,151,1) 0%,rgba(245,73,151,0.85) 53%,rgba(245,73,151,0) 65%,rgba(245,73,151,0) 100%);
 }
 
 .hit-count .count {

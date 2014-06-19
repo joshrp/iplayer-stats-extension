@@ -8,15 +8,20 @@
   "permissions": [
     "activeTab",
     "http://*.bbc.co.uk/iplayer*",
-    "http://*.bbc.co.uk/bbcone*"
+    "http://*.bbc.co.uk/bbc*",
+    "http://*.bbc.co.uk/cbbc",
+    "http://*.bbc.co.uk/cbeebies"
   ],
   "content_scripts": [
     {
       "matches": [
-        "http://*.bbc.co.uk/iplayer",
-        "http://*.bbc.co.uk/bbcone"
+        "http://*.bbc.co.uk/iplayer*",
+        "http://*.bbc.co.uk/bbc*",
+        "http://*.bbc.co.uk/cbbc",
+        "http://*.bbc.co.uk/cbeebies"
       ],
-      "js": ["jquery.2.10.js"]
+      "js": ["jquery.2.10.js", "hit-track.js"],
+      "css": ["main.css"]
     }
   ],
   "browser_action": {

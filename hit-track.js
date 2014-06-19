@@ -5,10 +5,7 @@ function getCounter() {
 	});
 }
 
-
 run = function ($) {
-	console.log($('.stream-item'))
-
 	var column = 1, row = 'A'
 	$('.stream-item').each(function (i, item) {
 		$item = $(item)
@@ -57,4 +54,12 @@ run = function ($) {
 	groups.find('.collection-list-item a').css({opacity: 1})
 	groups.find('.collection-list-container').css({top: 75})
 }
-run(jQuery)
+
+chrome.runtime.onMessage.addListener(
+ 	function(request, sender, sendResponse) {
+		console.log(sender.tab ?
+				"from a content script:" + sender.tab.url :
+				"from the extension");
+		run(jQuery)
+  	}
+);
