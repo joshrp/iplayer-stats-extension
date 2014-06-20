@@ -5,16 +5,37 @@ function getCounter() {
 	});
 }
 
-run = function ($) {
+formatHour = function (hour) {
+	n = parseInt(hour).toString();
+	width = 2;
+	return n.length >= width ? n : new Array(width - n.length + 1).join('0') + n;
+}
+
+getCount = function (column, row, hours, stats) {
+	var item = stats[column][row],
+		start = parseInt(hours[0], 10),
+		end = parseInt(hours[1], 10),
+		totalCount = 0;
+
+	for (var i=0; i < end - start; i++) {
+		index = i + start;
+		totalCount += parseInt(item[formatHour(index)], 10) || 0;
+	}
+	return totalCount;
+}
+
+run = function ($, stats, hours) {
 	var column = 1, row = 'A'
+	$('.hit-count').remove();
+
 	$('.stream-item').each(function (i, item) {
 		$item = $(item)
-
 		if ($item.is('.group-item')) {
 			var itemNum = 1;
+
 			$item.find('.collection-list-item a').each(function (j, link) {
 				counter = getCounter()
-				counter.find('.count').text(column + '_AB_' + itemNum)
+				counter.find('.count').text(getCount(column, 'AB_' + itemNum, hours, stats))
 
 				$(link)
 					.css({position:'relative'})
@@ -27,9 +48,13 @@ run = function ($) {
 			row = 'A'
 			column++;
 
-		} else {
+		} else if ($item.is(':not(.stream-endpanel)')) {
+			if (stats[column] === undefined || stats[column][row] === undefined) {
+				return;
+			}
+
 			counter = getCounter();
-			counter.find('.count').text(column + '_' + row)
+			counter.find('.count').text(getCount(column, row, hours, stats))
 			$(item).css({position:'relative'});
 			$item.find('a').eq(0)
 				.append(counter)
@@ -57,9 +82,6 @@ run = function ($) {
 
 chrome.runtime.onMessage.addListener(
  	function(request, sender, sendResponse) {
-		console.log(sender.tab ?
-				"from a content script:" + sender.tab.url :
-				"from the extension");
-		run(jQuery)
+		run(jQuery, request.stats, request.hourRange)
   	}
 );

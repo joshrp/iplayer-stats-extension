@@ -15,17 +15,58 @@
         width: 75px;
         height: 75px;
       }
+
+      .hour-select {
+        margin: 8px 18px;
+      }
+      .hour-values {
+        text-align:center;
+      }
+      .hour-value {
+        font-size:14pt;
+        display:inline-block;
+        margin: 2px 4px;
+      }
+
+      .time-windows ul{
+        padding:0; margin:20px auto;
+        text-align:center;
+      }
+      .time-windows li {
+        list-style: none;
+        display: inline;
+      }
     </style>
-    <button id="btn">Track Hits</button>
+    <link rel="stylesheet" href="jquery.nouislider.css">
+  </head>
+  <body>
+    <button id="btn">Show Clicks</button>
     <!--
       - JavaScript and HTML must be in separate files: see our Content Security
       - Policy documentation[1] for details and explanation.
       -
       - [1]: http://developer.chrome.com/extensions/contentSecurityPolicy.html
      -->
+    <div class="hour-select"></div>
+    <div class="hour-values">
+      <span class='hour-value-lower hour-value'></span> -
+      <span class='hour-value-upper hour-value'></span>
+    </div>
+
+    <div class='time-windows'>
+      <ul>
+        <li><button class="btn" data-window="early">Early</button></li>
+        <li><button class="btn" data-window="morning">Morning</button></li>
+        <li><button class="btn" data-window="afternoon">Afternoon</button></li>
+        <li><button class="btn" data-window="evening">Evening</button></li>
+        <li><button class="btn" data-window="all">All Day</button></li>
+      </ul>
+    </div>
+
+    <script src="jquery.2.10.js"></script>
+    <script src="jquery.nouislider.min.js"></script>
     <script src="popup.js"></script>
-  </head>
-  <body>
+
   </body>
 </html>
 
