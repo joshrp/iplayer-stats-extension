@@ -36,17 +36,25 @@
         list-style: none;
         display: inline;
       }
+
+      .show-btn {
+        border: none;
+        padding: 5px;
+        border-radius: 4px;
+        font-size: 16pt;
+        background: #ccc;
+        margin: 0 auto;
+        display: block;
+        cursor: pointer;
+      }
+      .show-btn:hover {
+        background: #f54997;
+        color: white;
+      }
     </style>
     <link rel="stylesheet" href="jquery.nouislider.css">
   </head>
   <body>
-    <button id="btn">Show Clicks</button>
-    <!--
-      - JavaScript and HTML must be in separate files: see our Content Security
-      - Policy documentation[1] for details and explanation.
-      -
-      - [1]: http://developer.chrome.com/extensions/contentSecurityPolicy.html
-     -->
     <div class="hour-select"></div>
     <div class="hour-values">
       <span class='hour-value-lower hour-value'></span> -
@@ -62,6 +70,8 @@
         <li><button class="btn" data-window="all">All Day</button></li>
       </ul>
     </div>
+
+    <button id="btn" class="show-btn">Show Clicks</button>
 
     <script src="jquery.2.10.js"></script>
     <script src="jquery.nouislider.min.js"></script>
