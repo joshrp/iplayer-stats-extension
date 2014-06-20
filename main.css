@@ -8,6 +8,8 @@
 	background:rgba(80,80,100,0.9);
 	z-index:100000;
 	background: rgba(245,73,151,0.8);
+	opacity: 0;
+	-webkit-transition: opacity 1000ms;
 }
 
 .hit-count .count {
