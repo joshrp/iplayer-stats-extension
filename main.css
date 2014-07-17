@@ -4,18 +4,29 @@
 	left:0;
 	bottom:0;
 	right:0;
-	text-align:center;
-	background:rgba(80,80,100,0.9);
-	z-index:100000;
-	background: rgba(245,73,151,0.8);
-	opacity: 0;
 	-webkit-transition: opacity 1000ms;
+	z-index:100000;
+	background: rgba(100,100,100,0.6);
+	text-align:center;
+	opacity: 0;
+}
+
+.hit-count .overlay {
+	position: absolute;
+	top: auto;
+	left:0;
+	bottom:0;
+	right:0;
+	transition: max-height 1000ms ease-out;
+	background: -webkit-linear-gradient(bottom, rgba(245,73,151,0.8) 0%,rgba(245,73,151,0.6) 95%,rgba(245,73,151,0) 100%);
+	max-height: 0px;
+	height: 100%;
 }
 
 .hit-count .count {
 	font-size: 28pt;
 	color: white;
-	text-shadow: 2px 2px 10px #000;
+	text-shadow: 2px 2px 3px #000;
 	margin-top: 70px;
 	display: block;
 }

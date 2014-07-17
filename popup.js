@@ -1,4 +1,7 @@
-
+var statsCache = {
+	fetched: 0,
+	data: {}
+};
 document.getElementById('btn').addEventListener('click', function () {
 	var hour = $('.hour-select').val();
 
@@ -68,23 +71,8 @@ $('.time-windows .btn').click(function () {
 	slider.val(hours).trigger('change')
 });
 
-var buildDaxUrl = function () {
-	var url = config.daxUrl;
-	params = $.extend({}, config.daxParams);
-
-	params['customParams'] = config.customParams.map(function (param) {
-		return param.name + ':' + encodeURIComponent(param.value);
-	}).join('|');
-
-	$.each(params, function (id, value) {
-		url = url.replace('{' + id + '}', value);
-	});
-
-	return url;
-}
-
 var getStats = function () {
-	var url = '',
+	var url = 'http://192.168.192.10:9615/stats/homepage-stream',
 		defer = $.Deferred()
 
 	$.getJSON(url).fail(function (e) {
@@ -92,23 +80,33 @@ var getStats = function () {
 		defer.reject(e);
 	}).done(function (results) {
 		var stats = {}
+		var maxVal = 0;
 		$.each(results, function (i, stat) {
-			stat = stat.c
-			var parts = stat[0].split('_'),
+			 Math.max(stat.c[2], maxVal);
+
+		});
+		$.each(results, function (i, stat) {
+			var stat = stat.c,
+				parts = stat[0].split(/[_\-]/),
 				columnNum,
 				rowNum
 
+			if (stat[0] == 'Total') {
+				return;
+			}
 			if (parts.length == 2) {
 				columnNum = parts[0];
 				rowNum = parts[1];
 			} else if (parts.length == 3) {
 				columnNum = parts[0]
-				rowNum = parts[1] + '_' + parts[2]
+				rowNum = parts[1] + '-' + parts[2];
 			}
+
 			column = stats[columnNum] || {};
 			column[rowNum] = column[rowNum] || {};
 			column[rowNum][stat[1]] = stat[2];
 			stats[columnNum] = column;
+
 		});
 
 		defer.resolve(stats);

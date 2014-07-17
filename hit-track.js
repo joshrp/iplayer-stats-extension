@@ -1,7 +1,7 @@
 function getNewCounter() {
 	return $("<div/>", {
 		"class": "hit-count",
-		html: $('<span class="count"/>')
+		html: $('<span class="count"/><div class="overlay"/>')
 	});
 }
 
@@ -9,6 +9,24 @@ formatHour = function (hour) {
 	n = parseInt(hour).toString();
 	width = 2;
 	return n.length >= width ? n : new Array(width - n.length + 1).join('0') + n;
+}
+
+getMaxValue = function (hours, stats) {
+	var start = parseInt(hours[0], 10),
+		end = parseInt(hours[1], 10),
+		max = 0;
+
+	for (columnKey in stats) {
+		var column = stats[columnKey];
+		for (rowKey in column) {
+			var row = column[rowKey]
+			if (columnKey && rowKey) {
+				total = getCount(columnKey, rowKey, hours, stats);
+				max = Math.max(total, max)
+			}
+		}
+	}
+	return max;
 }
 
 getCount = function (column, row, hours, stats) {
@@ -30,6 +48,8 @@ getCount = function (column, row, hours, stats) {
 run = function ($, stats, hours) {
 	var column = 1, row = 'A'
 	$('.hit-count').css({opacity:1});
+
+	var maxValue = getMaxValue(hours, stats);
 
 	$('.stream-item').each(function (i, item) {
 		$item = $(item)
@@ -56,32 +76,56 @@ run = function ($, stats, hours) {
 				if (counter.length == 0)
 					counter = getNewCounter()
 
-				count = getCount(column, 'AB_' + itemNum, hours, stats);
+				count = getCount(column, 'AB-' + itemNum, hours, stats);
 				if (count === false)
 					count = 'No Data'
+
 				counter.find('.count').text(count)
+				height = ((count / maxValue) * 100) + '%';
+				counter.find('.overlay').css('max-height', height);
 
 				$(link)
 					.css({position:'relative'})
-					.addClass(column + '_AB_' + itemNum)
+					.addClass(column + '-AB-' + itemNum)
 					.append(counter)
 
 				itemNum++;
 			});
 
+			$item.find('.collection-list-more a').each(function (j, link) {
+				var counter = $(link).find('.hit-count')
+				if (counter.length == 0)
+					counter = getNewCounter()
+
+				count = getCount(column, 'AB-ALL', hours, stats);
+
+				counter.find('.count').text(count)
+				height = ((count / maxValue) * 100) + '%';
+				counter.find('.overlay').css('max-height', height);
+
+				$(link)
+					.css({position:'relative'})
+					.addClass(column + '-AB-All')
+					.append(counter)
+			});
+
 			row = 'A'
 			column++;
 
-		} else if ($item.is(':not(.stream-endpanel)')) {
+		} else if ($item.is(':not(.stream-panel)')) {
 			if (stats[column] === undefined || stats[column][row] === undefined) {
 				return;
 			}
+			count = getCount(column, row, hours, stats);
+			counter.find('.count').text(count)
 
-			counter.find('.count').text(getCount(column, row, hours, stats))
+			height = ((count / maxValue) * 100) + '%';
+			counter.find('.overlay').css('max-height', height);
+
 			$(item).css({position:'relative'});
 			$item.find('a').eq(0)
 				.append(counter)
-				.addClass(column + '_' + row)
+				.addClass(column + '-' + row)
 
 			if (row == 'A') {
 				row = 'B'
@@ -105,6 +149,7 @@ run = function ($, stats, hours) {
 	groups.find('.header-item-count').css({display: 'none'})
 	groups.find('.collection-list-item a').css({opacity: 1})
 	groups.find('.collection-list-container').css({top: 75})
+	groups.find('.collection-list-more a').css({opacity: 1})
 }
 
 chrome.runtime.onMessage.addListener(
