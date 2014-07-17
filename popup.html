@@ -4,7 +4,9 @@
     <title>Getting Started Extension's Popup</title>
     <style>
       body {
-        min-width: 357px;
+        min-width: 500px;
+        border-radius: 10px;
+        padding: 20px 30px;
         overflow-x: hidden;
       }
 
@@ -36,20 +38,40 @@
         list-style: none;
         display: inline;
       }
+      .time-windows .btn {
+        font-size: 14pt;
+      }
 
-      .show-btn {
+
+      .actions .btn {
         border: none;
-        padding: 5px;
+        padding: 5px 8px;
         border-radius: 4px;
-        font-size: 16pt;
-        background: #ccc;
         margin: 0 auto;
         display: block;
         cursor: pointer;
       }
-      .show-btn:hover {
+      .actions .btn:hover {
         background: #f54997;
         color: white;
+      }
+
+      .show-btn {
+        background: #ccc;
+        font-size: 16pt;
+        float: left;
+        clear: left;
+      }
+      .clear-btn {
+        float:right;
+        clear:right;
+        background: #eee;
+        color: #333;
+        font-size: 14pt;
+      }
+      .clearfix {
+        clear:both;
+        height:1px;
       }
     </style>
     <link rel="stylesheet" href="jquery.nouislider.css">
@@ -71,7 +93,11 @@
       </ul>
     </div>
 
-    <button id="btn" class="show-btn">Show Clicks</button>
+    <div class='actions'>
+      <button id="btn" class="btn show-btn">Show Clicks</button>
+      <button id="btn" class="btn clear-btn">Clear Page</button>
+    </div>
+    <div class="clearfix"></div>
 
     <script src="jquery.2.10.js"></script>
     <script src="jquery.nouislider.min.js"></script>

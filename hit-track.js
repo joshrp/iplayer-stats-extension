@@ -139,21 +139,65 @@ run = function ($, stats, hours) {
 
 	setTimeout(function () {
 		$('.hit-count').css({opacity: 1})
-	}, 1)
+	}, 100)
 
-	groups = $('.stream-item.group-item');
+	hideItems = UnhideItems();
+}
+var hideItems,
+	UnhideItems = function () {
+		var items = {
+				'.collection-header-inner': {
+					top: 0
+				},
+				'.gradient-background': {
+					opacity: 1
+				},
+				'.collection-gradient': {
+					top: 0
+				},
+				'.collection-list-item a':{
+					opacity: 1
+				},
+				'.collection-list-container':{
+					top: 75
+				},
+				'.collection-list-more a':{
+					opacity: 1
+				},
+				'.header-item-count': {
+					display: 'none'
+				}
+			},
+			groups = $('.stream-item.group-item'),
+			itemDefaults = {}
 
-	groups.find('.collection-header-inner').css({top: 0})
-	groups.find('.collection-gradient').css({top: 0})
-		.find('.gradient-background').css({opacity:1})
-	groups.find('.header-item-count').css({display: 'none'})
-	groups.find('.collection-list-item a').css({opacity: 1})
-	groups.find('.collection-list-container').css({top: 75})
-	groups.find('.collection-list-more a').css({opacity: 1})
+		for (css in items) {
+			properties = items[css];
+			itemDefaults[css] = {}
+			for (property in properties) {
+				itemDefaults[css][property] = groups.find(css).eq(0).css(property);
+			}
+			groups.find(css).css(properties);
+		}
+
+		return function () {
+			for (css in itemDefaults) {
+				groups.find(css).css(itemDefaults[css])
+			}
+		}
+	}
+
+clearStats = function ($) {
+	$('.hit-count').remove()
+	hideItems()
 }
 
 chrome.runtime.onMessage.addListener(
  	function(request, sender, sendResponse) {
-		run(jQuery, request.stats, request.hourRange)
+		if (request.event == 'show-stats') {
+			run(jQuery, request.data.stats, request.data.hourRange)
+		} else if (request.event == 'clear-stats') {
+			clearStats(jQuery);
+		}
   	}
 );
