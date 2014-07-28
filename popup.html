@@ -8,6 +8,7 @@
         border-radius: 10px;
         padding: 20px 30px;
         overflow-x: hidden;
+        font-family: arial, helvetica;
       }
 
       img {
@@ -73,6 +74,28 @@
         clear:both;
         height:1px;
       }
+      .errors {
+        clear: both;
+        padding: 15px 0 0;
+      }
+      .errors ul{
+        margin:0; padding:0;
+      }
+      .errors li {
+        display: block;
+        background: #FF9696;
+        color: #222;
+        font-size: 14px;
+        padding: 8px 0;
+        margin: 8px 0;
+        text-align: center;
+        border-radius: 4px;
+        display: none;
+      }
+      .errors span {
+        margin:4px;
+        display: block;
+      }
     </style>
     <link rel="stylesheet" href="jquery.nouislider.css">
   </head>
@@ -96,6 +119,14 @@
     <div class='actions'>
       <button id="btn" class="btn show-btn">Show Clicks</button>
       <button id="btn" class="btn clear-btn">Clear Page</button>
+    </div>
+
+    <div class="errors">
+      <ul>
+        <li>
+          <span>Sorry, this data is still warming up. It usually doesn't take more than 5 minutes.</span>
+        </li>
+      </ul>
     </div>
     <div class="clearfix"></div>
 

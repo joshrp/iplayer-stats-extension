@@ -112,8 +112,11 @@ run = function ($, stats, hours) {
 			row = 'A'
 			column++;
 
-		} else if ($item.is(':not(.stream-panel)')) {
+		} else if ($item.is(':not(.stream-endpanel)')) {
 			if (stats[column] === undefined || stats[column][row] === undefined) {
+				row = 'A';
+				column++;
+				console.log('no data found for column',column,'row',row)
 				return;
 			}
 			count = getCount(column, row, hours, stats);
@@ -121,13 +124,15 @@ run = function ($, stats, hours) {
 
 			height = ((count / maxValue) * 100) + '%';
 			counter.find('.overlay').css('max-height', height);
-
+			console.log(item)
 			$(item).css({position:'relative'});
 			$item.find('a').eq(0)
 				.append(counter)
 				.addClass(column + '-' + row)
 
-			if (row == 'A') {
+			if ($item.is('.stream-panel')) {
+				column++;
+			} else if (row == 'A') {
 				row = 'B'
 			} else {
 				row = 'A';

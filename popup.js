@@ -6,7 +6,7 @@ document.getElementsByClassName('show-btn')[0].addEventListener('click', functio
 	var hour = $('.hour-select').val();
 
 	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-		getStats().done(function (stats) {
+		getStats(tabs[0].url).done(function (stats) {
 			chrome.tabs.sendMessage(tabs[0].id, {
 				event: 'show-stats',
 				data: {
@@ -80,16 +80,36 @@ $('.time-windows .btn').click(function () {
 	slider.val(hours).trigger('change')
 });
 
-var getStats = function () {
-	var url = 'http://192.168.192.10:9615/stats/homepage-stream',
+var getStatsUrlForPage = function(currentUrl) {
+	currentPath = currentUrl.replace(/https?:\/\/[^\/]+/, '');
+	categoryMatches = currentPath.match(/\/iplayer\/categories\/([\w\-]+)\/highlights/)
+	channelMatches = currentPath.match(/\/((iplayer|tv)\/)?(cbbc|bbc\w+|cbeebies)$/)
+	if (categoryMatches) {
+		return 'category-stream-' + categoryMatches[1];
+	} else if (channelMatches) {
+		return 'channels-stream-' + (channelMatches.length == 4 ? channelMatches[3] : channelMatches[2]);
+	} else {
+		return 'homepage-stream';
+	}
+}
+
+var getStats = function (url) {
+	var url = 'http://192.168.192.10:9615/stats/' + getStatsUrlForPage(url),
 		defer = $.Deferred()
+
+	initLoading();
 
 	$.getJSON(url).fail(function (e) {
 		console.log('Failed to fetch stats from', url)
 		defer.reject(e);
-	}).done(function (results) {
+	}).done(function (results, status, jqXHR) {
 		var stats = {}
 		var maxVal = 0;
+
+		if (jqXHR.status === 204) {
+			$('.notReady').show();
+		}
+
 		$.each(results, function (i, stat) {
 			 Math.max(stat.c[2], maxVal);
 
@@ -119,8 +139,18 @@ var getStats = function () {
 		});
 
 		defer.resolve(stats);
-	});
+	}).always(function () {
+		endLoading();
+	})
 
 	return defer;
+
+}
+
+var initLoading = function () {
+	$('.notReady').hide();
+}
+
+var endLoading = function () {
 
 }

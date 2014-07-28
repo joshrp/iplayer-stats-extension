@@ -8,18 +8,17 @@
   "permissions": [
     "activeTab",
     "storage",
+    "tabs",
     "http://*.bbc.co.uk/iplayer*",
     "http://*.bbc.co.uk/bbc*",
-    "http://*.bbc.co.uk/cbbc",
-    "http://*.bbc.co.uk/cbeebies"
+    "http://*.bbc.co.uk/tv/*"
   ],
   "content_scripts": [
     {
       "matches": [
         "http://*.bbc.co.uk/iplayer*",
         "http://*.bbc.co.uk/bbc*",
-        "http://*.bbc.co.uk/cbbc",
-        "http://*.bbc.co.uk/cbeebies"
+        "http://*.bbc.co.uk/tv/*"
       ],
       "js": ["jquery.2.10.js", "hit-track.js"],
       "css": ["main.css"]
