@@ -114,21 +114,19 @@ run = function ($, stats, hours) {
 
 		} else if ($item.is(':not(.stream-endpanel)')) {
 			if (stats[column] === undefined || stats[column][row] === undefined) {
-				row = 'A';
-				column++;
 				console.log('no data found for column',column,'row',row)
-				return;
-			}
-			count = getCount(column, row, hours, stats);
-			counter.find('.count').text(count)
+			} else {
+				count = getCount(column, row, hours, stats);
+				counter.find('.count').text(count)
 
-			height = ((count / maxValue) * 100) + '%';
-			counter.find('.overlay').css('max-height', height);
-			console.log(item)
-			$(item).css({position:'relative'});
-			$item.find('a').eq(0)
-				.append(counter)
-				.addClass(column + '-' + row)
+				height = ((count / maxValue) * 100) + '%';
+				counter.find('.overlay').css('max-height', height);
+
+				$(item).css({position:'relative'});
+				$item.find('a').eq(0)
+					.append(counter)
+					.addClass(column + '-' + row)
+			}
 
 			if ($item.is('.stream-panel')) {
 				column++;

@@ -83,6 +83,7 @@
       }
       .errors li {
         display: block;
+        display: none;
         background: #FF9696;
         color: #222;
         font-size: 14px;
@@ -90,48 +91,56 @@
         margin: 8px 0;
         text-align: center;
         border-radius: 4px;
-        display: none;
       }
       .errors span {
         margin:4px;
         display: block;
       }
+
+      .main {
+        /*display: none;*/
+      }
     </style>
     <link rel="stylesheet" href="jquery.nouislider.css">
   </head>
   <body>
-    <div class="hour-select"></div>
-    <div class="hour-values">
-      <span class='hour-value-lower hour-value'></span> -
-      <span class='hour-value-upper hour-value'></span>
+    <div class="login">
+      Login
     </div>
+    <div class="main">
+      <div class="hour-select"></div>
+      <div class="hour-values">
+        <span class='hour-value-lower hour-value'></span> -
+        <span class='hour-value-upper hour-value'></span>
+      </div>
 
-    <div class='time-windows'>
-      <ul>
-        <li><button class="btn" data-window="early">Early</button></li>
-        <li><button class="btn" data-window="morning">Morning</button></li>
-        <li><button class="btn" data-window="afternoon">Afternoon</button></li>
-        <li><button class="btn" data-window="evening">Evening</button></li>
-        <li><button class="btn" data-window="all">All Day</button></li>
-      </ul>
+      <div class='time-windows'>
+        <ul>
+          <li><button class="btn" data-window="early">Early</button></li>
+          <li><button class="btn" data-window="morning">Morning</button></li>
+          <li><button class="btn" data-window="afternoon">Afternoon</button></li>
+          <li><button class="btn" data-window="evening">Evening</button></li>
+          <li><button class="btn" data-window="all">All Day</button></li>
+        </ul>
+      </div>
+
+      <div class='actions'>
+        <button id="btn" class="btn show-btn">Show Clicks</button>
+        <button id="btn" class="btn clear-btn">Clear Page</button>
+      </div>
+
+      <div class="errors">
+        <ul>
+          <li class="notReady">
+            <span>Sorry, this data is still warming up. It usually doesn't take more than 5 minutes.</span>
+          </li>
+        </ul>
+      </div>
+      <div class="clearfix"></div>
     </div>
-
-    <div class='actions'>
-      <button id="btn" class="btn show-btn">Show Clicks</button>
-      <button id="btn" class="btn clear-btn">Clear Page</button>
-    </div>
-
-    <div class="errors">
-      <ul>
-        <li>
-          <span>Sorry, this data is still warming up. It usually doesn't take more than 5 minutes.</span>
-        </li>
-      </ul>
-    </div>
-    <div class="clearfix"></div>
-
     <script src="jquery.2.10.js"></script>
     <script src="jquery.nouislider.min.js"></script>
+    <script src="stats.js"></script>
     <script src="popup.js"></script>
 
   </body>

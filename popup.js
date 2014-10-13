@@ -1,23 +1,28 @@
-var statsCache = {
-	fetched: 0,
-	data: {}
-};
+// Clicking "Show" button
 document.getElementsByClassName('show-btn')[0].addEventListener('click', function () {
 	var hour = $('.hour-select').val();
 
+	// Get active Tab
 	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-		getStats(tabs[0].url).done(function (stats) {
-			chrome.tabs.sendMessage(tabs[0].id, {
-				event: 'show-stats',
-				data: {
-					stats: stats,
-					hourRange: hour
-				}
+		try {
+			fillStats(tabs[0].url).done(function (stats) {
+				chrome.tabs.sendMessage(tabs[0].id, {
+					event: 'show-stats',
+					data: {
+						stats: stats,
+						hourRange: hour
+					}
+				});
 			});
-		});
+		} catch(e) {
+			console.log('Got error!', e)
+			console.log(e.stack)
+			throw e;
+		}
 	});
 });
 
+// Clicking "Clear" Button
 document.getElementsByClassName('clear-btn')[0].addEventListener('click', function () {
 	chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 		chrome.tabs.sendMessage(tabs[0].id, {
@@ -26,28 +31,30 @@ document.getElementsByClassName('clear-btn')[0].addEventListener('click', functi
 	});
 });
 
-var slider = $('.hour-select').noUiSlider({
-	start: [0, 24],
-	connect: false,
-	range: {
-		'min': 0,
-		'max': 24
-	},
-	step: 1
-}).on('slide change', function () {
-	var slider = $(this),
-		lower =$('.hour-value-lower'),
-		upper = $('.hour-value-upper')
 
-	vals = slider.val();
+var statsHost = 'http:/dax-stats.sandbox.co.uk',
+	slider = $('.hour-select').noUiSlider({
+		start: [0, 24],
+		connect: false,
+		range: {
+			'min': 0,
+			'max': 24
+		},
+		step: 1
+	}).on('slide change', function () {
+		var slider = $(this),
+			lower =$('.hour-value-lower'),
+			upper = $('.hour-value-upper')
 
-	chrome.storage.sync.set({
-		'hourRange': vals
+		vals = slider.val();
+
+		chrome.storage.sync.set({
+			'hourRange': vals
+		});
+
+		lower.html((parseInt(vals[0], 10)) + ':00');
+		upper.html((parseInt(vals[1], 10)) + ':00');
 	});
-
-	lower.html((parseInt(vals[0], 10)) + ':00');
-	upper.html((parseInt(vals[1], 10)) + ':00');
-});
 
 chrome.storage.sync.get('hourRange', function (values) {
 	slider.val(values.hourRange).trigger('slide');
@@ -80,71 +87,19 @@ $('.time-windows .btn').click(function () {
 	slider.val(hours).trigger('change')
 });
 
-var getStatsUrlForPage = function(currentUrl) {
-	currentPath = currentUrl.replace(/https?:\/\/[^\/]+/, '');
-	categoryMatches = currentPath.match(/\/iplayer\/categories\/([\w\-]+)\/highlights/)
-	channelMatches = currentPath.match(/\/((iplayer|tv)\/)?(cbbc|bbc\w+|cbeebies)$/)
-	if (categoryMatches) {
-		return 'category-stream-' + categoryMatches[1];
-	} else if (channelMatches) {
-		return 'channels-stream-' + (channelMatches.length == 4 ? channelMatches[3] : channelMatches[2]);
-	} else {
-		return 'homepage-stream';
-	}
-}
+var statsHelper = window.statsHelpers();
 
-var getStats = function (url) {
-	var url = 'http://192.168.192.10:9615/stats/' + getStatsUrlForPage(url),
-		defer = $.Deferred()
-
+var fillStats = function (url) {
 	initLoading();
+	var defer = $.Deferred();
 
-	$.getJSON(url).fail(function (e) {
-		console.log('Failed to fetch stats from', url)
-		defer.reject(e);
-	}).done(function (results, status, jqXHR) {
-		var stats = {}
-		var maxVal = 0;
-
-		if (jqXHR.status === 204) {
+	return statsHelper.getStats(url, {}).then(function (data) {
+		if (data.stats === false) {
 			$('.notReady').show();
 		}
-
-		$.each(results, function (i, stat) {
-			 Math.max(stat.c[2], maxVal);
-
-		});
-		$.each(results, function (i, stat) {
-			var stat = stat.c,
-				parts = stat[0].split(/[_\-]/),
-				columnNum,
-				rowNum
-
-			if (stat[0] == 'Total') {
-				return;
-			}
-			if (parts.length == 2) {
-				columnNum = parts[0];
-				rowNum = parts[1];
-			} else if (parts.length == 3) {
-				columnNum = parts[0]
-				rowNum = parts[1] + '-' + parts[2];
-			}
-
-			column = stats[columnNum] || {};
-			column[rowNum] = column[rowNum] || {};
-			column[rowNum][stat[1]] = stat[2];
-			stats[columnNum] = column;
-
-		});
-
-		defer.resolve(stats);
-	}).always(function () {
 		endLoading();
-	})
-
-	return defer;
-
+		return data.data;
+	});
 }
 
 var initLoading = function () {
