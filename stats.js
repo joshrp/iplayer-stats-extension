@@ -1,32 +1,40 @@
+
 window.statsHelpers = function () {
-	var statsCache = {},
-		cacheTime = 1000 * 60 * 60; // 1 hour cache
+	var statsHost = 'https://dax-stats.iplayer.cloud.bbc.co.uk:7445',
+		statsCache = new Cache();
 
-	var addToCache = function (url, data) {
-		statsCache[url] = {
-			fetched: new Date().getTime(),
-			data: data
-		};
-	}
+	function getPageInfo (currentUrl) {
+		var currentPath = currentUrl.replace(/https?:\/\/[^\/]+/, ''),
+			categoryMatches = currentPath.match(/\/iplayer\/categories\/([\w\-]+)\/highlights/),
+			channelMatches = currentPath.match(/\/((iplayer|tv)\/)?(cbbc|bbc\w+|cbeebies)$/),
+			id;
 
-	var getFromCache = function (url) {
-		if (url in statsCache) {
-			stats = statsCache[url];
-			if (stats.fetched > new Date().getTime() - cacheTime) {
-				return stats.data;
+		if (categoryMatches) {
+			id = categoryMatches[1];
+			return {
+				id: id,
+				type: 'category'
+			}
+		} else if (channelMatches) {
+			id = (channelMatches.length == 4 ? channelMatches[3] : channelMatches[2]);
+			return {
+				id: id,
+				type: 'channels'
+			}
+		} else {
+			id = 'homepage';
+			return {
+				id: id,
+				type: 'homepage'
 			}
 		}
-		return false;
+
 	}
 
 	var getStatsUrlForPage = function(currentUrl) {
-		currentPath = currentUrl.replace(/https?:\/\/[^\/]+/, '');
-		categoryMatches = currentPath.match(/\/iplayer\/categories\/([\w\-]+)\/highlights/)
-		channelMatches = currentPath.match(/\/((iplayer|tv)\/)?(cbbc|bbc\w+|cbeebies)$/)
-		if (categoryMatches) {
-			return 'category-stream-' + categoryMatches[1];
-		} else if (channelMatches) {
-			return 'channels-stream-' + (channelMatches.length == 4 ? channelMatches[3] : channelMatches[2]);
+		var info = getPageInfo(currentUrl);
+		if (info.id !== 'homepage') {
+			return info.type + '-stream-' + info.id;
 		} else {
 			return 'homepage-stream';
 		}
@@ -42,13 +50,7 @@ window.statsHelpers = function () {
 			url: url,
 		    xhrFields: {
 		       withCredentials: true
-		    },
-		    beforeSend: function (xhr) {
-		    	user.username = 'josh'
-		    	user.password = 'foo'
-		    	auth = btoa(user.username + ':' + user.password);
-			    xhr.setRequestHeader ("Authorization", "Basic " + auth);
-			}
+		    }
 		}).fail(function (e) {
 			console.log('Failed to fetch stats from', url)
 			defer.reject(e);
@@ -59,7 +61,7 @@ window.statsHelpers = function () {
 				})
 			}
 
-			addToCache(pageUrl, results);
+			statsCache.add(pageUrl, results);
 
 			defer.resolve(results);
 
@@ -100,22 +102,45 @@ window.statsHelpers = function () {
 	return {
 		getStats: function (url, user) {
 			var defer = $.Deferred();
-			stats = getFromCache(url);
-			if (stats) {
+			data = statsCache.get(url);
+			if (data) {
 				console.log('Pulled from cache')
-				result = processStats(stats)
-				defer.resolve(result);
+				defer.resolve(data);
 			} else {
 				console.log('fetching new stats')
-				return fetchStats(url, user).then(function (results) {
-					return processStats(results);
-				});
+				return fetchStats(url, user).then(function (data) {
+					data.stats = processStats(data.stats);
+					return data
+				})
 			}
 
 			return defer;
-
-
+		},
+		getPageInfo: getPageInfo,
+		getStatus: function () {
+			return $.getJSON(statsHost + '/status')
 		}
 	}
 
+}
+
+function Cache () {
+	this.cache = {};
+	this.cacheTime = 1000 * 60 * 60; // 1 hour cache
+}
+
+Cache.prototype.add = function (url, data) {
+	this.cache[url] = {
+		fetched: new Date().getTime(),
+		data: data
+	};
+}
+Cache.prototype.get = function (url) {
+	if (url in this.cache) {
+		stats = this.cache[url];
+		if (stats.fetched > new Date().getTime() - this.cacheTime) {
+			return stats.data;
+		}
+	}
+	return false;
 }

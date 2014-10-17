@@ -6,7 +6,7 @@
       body {
         min-width: 500px;
         border-radius: 10px;
-        padding: 20px 30px;
+        padding: 1em 30px;
         overflow-x: hidden;
         font-family: arial, helvetica;
       }
@@ -19,8 +19,12 @@
         height: 75px;
       }
 
+      .slider {
+        position: relative;
+        top: -1.2em;
+      }
       .hour-select {
-        margin: 8px 18px;
+        margin: .5em 1em;
       }
       .hour-values {
         text-align:center;
@@ -32,7 +36,8 @@
       }
 
       .time-windows ul{
-        padding:0; margin:20px auto;
+        padding:0;
+        margin:0 auto 1em;
         text-align:center;
       }
       .time-windows li {
@@ -40,9 +45,14 @@
         display: inline;
       }
       .time-windows .btn {
-        font-size: 14pt;
+        font-size: 11pt;
+        padding: 4px 8px;
+        background: #eee;
+        color: #333;
+        border-radius: 4px;
+        border: none;
+        cursor: pointer;
       }
-
 
       .actions .btn {
         border: none;
@@ -52,7 +62,8 @@
         display: block;
         cursor: pointer;
       }
-      .actions .btn:hover {
+      .actions .btn:hover,
+      .time-windows .btn:hover {
         background: #f54997;
         color: white;
       }
@@ -76,7 +87,6 @@
       }
       .errors {
         clear: both;
-        padding: 15px 0 0;
       }
       .errors ul{
         margin:0; padding:0;
@@ -88,7 +98,7 @@
         color: #222;
         font-size: 14px;
         padding: 8px 0;
-        margin: 8px 0;
+        margin: 8px 0 0;
         text-align: center;
         border-radius: 4px;
       }
@@ -100,18 +110,40 @@
       .main {
         /*display: none;*/
       }
+
+      .state {
+        clear: both;
+        height: 1em;
+      }
+      .state .currentPage,
+      .state .currentDate {
+        margin: 0;
+        float: left;
+        display: inline;
+        padding: 0;
+        font-size: 14px;
+      }
+
+      .state .currentDate {
+        float: right;
+      }
     </style>
     <link rel="stylesheet" href="jquery.nouislider.css">
   </head>
+
   <body>
-    <div class="login">
-      Login
-    </div>
     <div class="main">
-      <div class="hour-select"></div>
-      <div class="hour-values">
-        <span class='hour-value-lower hour-value'></span> -
-        <span class='hour-value-upper hour-value'></span>
+      <div class="state">
+        <h1 class="currentPage"></h1>
+        <h2 class="currentDate"></h2>
+      </div>
+
+      <div class="slider">
+        <div class="hour-values">
+          <span class='hour-value-lower hour-value'></span> -
+          <span class='hour-value-upper hour-value'></span>
+        </div>
+        <div class="hour-select"></div>
       </div>
 
       <div class='time-windows'>
@@ -127,6 +159,7 @@
       <div class='actions'>
         <button id="btn" class="btn show-btn">Show Clicks</button>
         <button id="btn" class="btn clear-btn">Clear Page</button>
+        <div class="clearfix"></div>
       </div>
 
       <div class="errors">
@@ -140,6 +173,7 @@
     </div>
     <script src="jquery.2.10.js"></script>
     <script src="jquery.nouislider.min.js"></script>
+    <script src="lib/moment.js"></script>
     <script src="stats.js"></script>
     <script src="popup.js"></script>
 

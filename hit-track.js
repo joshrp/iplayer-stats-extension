@@ -98,6 +98,8 @@ run = function ($, stats, hours) {
 					counter = getNewCounter()
 
 				count = getCount(column, 'AB-ALL', hours, stats);
+				if (count === false)
+					count = 'No Data'
 
 				counter.find('.count').text(count)
 				height = ((count / maxValue) * 100) + '%';
@@ -113,7 +115,7 @@ run = function ($, stats, hours) {
 			column++;
 
 		} else if ($item.is(':not(.stream-endpanel)')) {
-			if (stats[column] === undefined || stats[column][row] === undefined) {
+			if (stats[column] == null || stats[column][row] == null) {
 				console.log('no data found for column',column,'row',row)
 			} else {
 				count = getCount(column, row, hours, stats);
@@ -196,11 +198,12 @@ clearStats = function ($) {
 }
 
 chrome.runtime.onMessage.addListener(
- 	function(request, sender, sendResponse) {
+	function(request, sender, sendResponse) {
 		if (request.event == 'show-stats') {
+			console.log(request.data)
 			run(jQuery, request.data.stats, request.data.hourRange)
 		} else if (request.event == 'clear-stats') {
 			clearStats(jQuery);
 		}
-  	}
+	}
 );
