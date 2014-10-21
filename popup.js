@@ -3,8 +3,6 @@ var statsHelper = window.statsHelpers();
 (function($, statsHelper) {
 
 	statsHelper.getStatus().done(function (status) {
-		console.log('got status');
-		console.log(status.date, moment(status.date * 1000))
 		var currentDate = moment(status.date * 1000);
 		$('.currentDate').html(currentDate.format('ddd Do MMM'))
 	});
@@ -17,8 +15,8 @@ var statsHelper = window.statsHelpers();
 			info.name = info.id
 						.replace(/^bbc/, 'BBC ')
 						.replace(/\-/g,' ')
-						.replace(/(\s+\w|^\w)/g, function (txt) {
-							return txt.charAt(0).toUpperCase();
+						.replace(/(?:^|\s+)+(\w)/g, function (match, txt) {
+							return ' ' + txt.charAt(0).toUpperCase();
 						});
 			$('.currentPage').html(info.name)
 
@@ -34,8 +32,7 @@ var statsHelper = window.statsHelpers();
 
 			// Get active Tab
 			try {
-				fillStats(that.currentTab.url).done(function (data) {
-					console.log('sending stats', data);
+				fillStats(that.currentTab.url).then(function (data) {
 					chrome.tabs.sendMessage(that.currentTab.id, {
 						event: 'show-stats',
 						data: {
@@ -44,7 +41,11 @@ var statsHelper = window.statsHelpers();
 							date: data.date
 						}
 					});
-				});
+					console.log('sent stats', data);
+				}, function (e) {
+					console.error('couldn\'t send stats!')
+					console.error(e)
+				}).done();
 			} catch(e) {
 				console.log('Got error!', e)
 				console.log(e.stack)
@@ -86,8 +87,9 @@ var statsHelper = window.statsHelpers();
 
 			lower.html((parseInt(vals[0], 10)) + ':00');
 			upper.html((parseInt(vals[1], 10)) + ':00');
-		});
+		})
 
+		that.slider.trigger('slide')
 
 		chrome.storage.sync.get('hourRange', function (values) {
 			that.slider.val(values.hourRange).trigger('slide');

@@ -1,12 +1,12 @@
 
 window.statsHelpers = function () {
-	var statsHost = 'https://dax-stats.iplayer.cloud.bbc.co.uk:7445',
+	var statsHost = 'https://dax-stats.iplayer.cloud.bbc.co.uk',
 		statsCache = new Cache();
 
 	function getPageInfo (currentUrl) {
 		var currentPath = currentUrl.replace(/https?:\/\/[^\/]+/, ''),
 			categoryMatches = currentPath.match(/\/iplayer\/categories\/([\w\-]+)\/highlights/),
-			channelMatches = currentPath.match(/\/((iplayer|tv)\/)?(cbbc|bbc\w+|cbeebies)$/),
+			channelMatches = currentPath.match(/\/((iplayer|tv)\/)?(cbbc|bbc\w+|cbeebies)(\?.*)?$/),
 			id;
 
 		if (categoryMatches) {
@@ -16,7 +16,7 @@ window.statsHelpers = function () {
 				type: 'category'
 			}
 		} else if (channelMatches) {
-			id = (channelMatches.length == 4 ? channelMatches[3] : channelMatches[2]);
+			id = (channelMatches.length == 5 ? channelMatches[3] : channelMatches[2]);
 			return {
 				id: id,
 				type: 'channels'
@@ -51,9 +51,6 @@ window.statsHelpers = function () {
 		    xhrFields: {
 		       withCredentials: true
 		    }
-		}).fail(function (e) {
-			console.log('Failed to fetch stats from', url)
-			defer.reject(e);
 		}).then(function (results, status, jqXHR) {
 			if (jqXHR.status === 204) {
 				defer.resolve({
@@ -65,7 +62,10 @@ window.statsHelpers = function () {
 
 			defer.resolve(results);
 
-		});
+		}, function (e) {
+			console.log('Failed to fetch stats from', url)
+			defer.reject(e);
+		}).done();
 
 		return defer;
 	}
