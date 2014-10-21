@@ -1,9 +1,8 @@
 {
   "manifest_version": 2,
-
-  "name": "Hit Tracker",
-  "description": "",
-  "version": "0.0.0",
+  "name": "iPlayer Hit Tracker",
+  "description": "Shows hits on stream pages on BBC iPlayer. Not for public use, BBC credentials required.",
+  "version": "0.1.0",
 
   "permissions": [
     "activeTab",
