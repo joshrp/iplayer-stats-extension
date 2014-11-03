@@ -101,6 +101,8 @@
         margin: 8px 0 0;
         text-align: center;
         border-radius: 4px;
+        font-size: 1.4em;
+        list-style: none;
       }
       .errors span {
         margin:4px;
@@ -165,7 +167,10 @@
       <div class="errors">
         <ul>
           <li class="notReady">
-            <span>Sorry, this data is still warming up. It usually doesn't take more than 5 minutes.</span>
+            <span>Sorry, this data is still warming up. Give it another 60 seconds</span>
+          </li>
+          <li class="noData">
+            <span>Looks like there was no data for these times on this page</span>
           </li>
         </ul>
       </div>

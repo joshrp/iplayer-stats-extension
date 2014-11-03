@@ -41,9 +41,7 @@ var statsHelper = window.statsHelpers();
 							date: data.date
 						}
 					});
-					console.log('sent stats', data);
 				}, function (e) {
-					console.error('couldn\'t send stats!')
 					console.error(e)
 				}).done();
 			} catch(e) {
@@ -129,18 +127,24 @@ var statsHelper = window.statsHelpers();
 		var defer = $.Deferred();
 
 		statsHelper.getStats(url, {}).then(function (data) {
-			if (data === false) {
-				$('.notReady').show();
+			defer.resolve(data);
+		}, function (data) {
+			console.log('got data', data)
+			if (data.data === false) {
+				$('.errors .noData').show();
+				defer.reject();
+			} else if (data.data.length === 0) {
+				$('.errors .notReady').show();
 				defer.reject();
 			}
+		}).always(function () {
 			endLoading();
-			defer.resolve(data);
 		});
 		return defer;
 	}
 
 	var initLoading = function () {
-		$('.notReady').hide();
+		$('.errors li').hide();
 	}
 
 	var endLoading = function () {

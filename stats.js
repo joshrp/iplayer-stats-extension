@@ -51,20 +51,23 @@ window.statsHelpers = function () {
 		    xhrFields: {
 		       withCredentials: true
 		    }
-		}).then(function (results, status, jqXHR) {
-			if (jqXHR.status === 204) {
-				defer.resolve({
+		}).statusCode({
+			204: function (results) {
+				defer.reject({
 					data: false
-				})
+				});
+				statsCache.add(pageUrl, results);
+			},
+			202: function () {
+				defer.reject({
+					data: []
+				});
+			},
+			200: function (results) {
+				defer.resolve(results);
 			}
-
-			statsCache.add(pageUrl, results);
-
-			defer.resolve(results);
-
-		}, function (e) {
+		}).fail(function (jqXHR) {
 			console.log('Failed to fetch stats from', url)
-			defer.reject(e);
 		}).done();
 
 		return defer;
