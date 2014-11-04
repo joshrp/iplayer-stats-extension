@@ -5,6 +5,7 @@ window.statsHelpers = function () {
 
 	function getPageInfo (currentUrl) {
 		var currentPath = currentUrl.replace(/https?:\/\/[^\/]+/, ''),
+			homepageMatch = currentPath.match(/^\/iplayer\/?$/),
 			categoryMatches = currentPath.match(/\/iplayer\/categories\/([\w\-]+)\/highlights/),
 			channelMatches = currentPath.match(/\/((iplayer|tv)\/)?(cbbc|bbc\w+|cbeebies)(\?.*)?$/),
 			id;
@@ -21,18 +22,23 @@ window.statsHelpers = function () {
 				id: id,
 				type: 'channels'
 			}
-		} else {
+		} else if (homepageMatch) {
 			id = 'homepage';
 			return {
 				id: id,
 				type: 'homepage'
 			}
+		} else {
+			return false;
 		}
 
 	}
 
 	var getStatsUrlForPage = function(currentUrl) {
 		var info = getPageInfo(currentUrl);
+		if (info === false) {
+			return false;
+		}
 		if (info.id !== 'homepage') {
 			return info.type + '-stream-' + info.id;
 		} else {
@@ -41,34 +47,41 @@ window.statsHelpers = function () {
 	}
 
 	var fetchStats = function (pageUrl, user) {
-		var url = statsHost + '/stats/' + getStatsUrlForPage(pageUrl),
+		var statsId = getStatsUrlForPage(pageUrl),
+			url = statsHost + '/stats/' + statsId,
 			defer = $.Deferred()
 
-		$.ajax({
-			method: 'get',
-			dataType: 'json',
-			url: url,
-		    xhrFields: {
-		       withCredentials: true
-		    }
-		}).statusCode({
-			204: function (results) {
-				defer.reject({
-					data: false
-				});
-				statsCache.add(pageUrl, results);
-			},
-			202: function () {
-				defer.reject({
-					data: []
-				});
-			},
-			200: function (results) {
-				defer.resolve(results);
-			}
-		}).fail(function (jqXHR) {
-			console.log('Failed to fetch stats from', url)
-		}).done();
+		if (statsId === false) {
+			defer.reject(new Error('Current page is not known'));
+		} else {
+
+			$.ajax({
+				method: 'get',
+				dataType: 'json',
+				url: url,
+			    xhrFields: {
+			       withCredentials: true
+			    }
+			}).statusCode({
+				204: function (results) {
+					defer.reject({
+						data: false
+					});
+					statsCache.add(pageUrl, results);
+				},
+				202: function () {
+					defer.reject({
+						data: []
+					});
+				},
+				200: function (results) {
+					defer.resolve(results);
+				}
+			}).fail(function (jqXHR) {
+				defer.reject(new Error('Request for stats failed'));
+				console.log('Failed to fetch stats from', url);
+			}).done();
+		}
 
 		return defer;
 	}

@@ -11,13 +11,19 @@ var statsHelper = window.statsHelpers();
 		var that = this;
 		chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 			that.currentTab = tabs[0];
-			info = statsHelper.getPageInfo(that.currentTab.url);
-			info.name = info.id
-						.replace(/^bbc/, 'BBC ')
-						.replace(/\-/g,' ')
-						.replace(/(?:^|\s+)+(\w)/g, function (match, txt) {
-							return ' ' + txt.charAt(0).toUpperCase();
-						});
+			var info = statsHelper.getPageInfo(that.currentTab.url);
+			if (info !== false) {
+				info.name = info.id
+							.replace(/^bbc/, 'BBC ')
+							.replace(/\-/g,' ')
+							.replace(/(?:^|\s+)+(\w)/g, function (match, txt) {
+								return ' ' + txt.charAt(0).toUpperCase();
+							});
+			} else {
+				info = {
+					name: 'No Stats'
+				}
+			}
 			$('.currentPage').html(info.name)
 
 			that.init();
@@ -130,7 +136,9 @@ var statsHelper = window.statsHelpers();
 			defer.resolve(data);
 		}, function (data) {
 			console.log('got data', data)
-			if (data.data === false) {
+			if (!(data in data)) {
+				defer.reject(data);
+			} else if (data.data === false) {
 				$('.errors .noData').show();
 				defer.reject();
 			} else if (data.data.length === 0) {

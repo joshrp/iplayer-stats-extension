@@ -141,7 +141,7 @@
 					height = ((count / maxValue) * 100) + '%';
 					counter.find('.overlay').css('max-height', height);
 
-					$(item).css({position:'relative'});
+					$item.css({position:'relative'});
 					$item.find('a').eq(0)
 						.append(counter)
 						.addClass(column + '-' + row)
