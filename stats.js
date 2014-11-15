@@ -7,7 +7,7 @@ window.statsHelpers = function () {
 		var currentPath = currentUrl.replace(/https?:\/\/[^\/]+/, ''),
 			homepageMatch = currentPath.match(/^\/iplayer\/?$/),
 			categoryMatches = currentPath.match(/\/iplayer\/categories\/([\w\-]+)\/highlights/),
-			channelMatches = currentPath.match(/\/((iplayer|tv)\/)?(cbbc|bbc\w+|cbeebies)(\?.*)?$/),
+			channelMatches = currentPath.match(/\/((iplayer|tv)\/)?(cbbc|bbc\w+|cbeebies|radio1)(\?.*)?$/),
 			id;
 
 		if (categoryMatches) {
