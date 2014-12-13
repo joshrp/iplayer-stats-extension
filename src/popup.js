@@ -1,10 +1,14 @@
+/* global jQuery, console, window, moment, document, chrome */
+/* jshint globalstrict: true */
+
+'use strict';
 var statsHelper = window.statsHelpers();
 
 (function($, statsHelper) {
 
 	statsHelper.getStatus().done(function (status) {
 		var currentDate = moment(status.date * 1000);
-		$('.currentDate').html(currentDate.format('ddd Do MMM'))
+		$('.currentDate').html(currentDate.format('ddd Do MMM'));
 	});
 
 	function Popup () {
@@ -22,9 +26,9 @@ var statsHelper = window.statsHelpers();
 			} else {
 				info = {
 					name: 'No Stats'
-				}
+				};
 			}
-			$('.currentPage').html(info.name)
+			$('.currentPage').html(info.name);
 
 			that.init();
 		});
@@ -48,11 +52,11 @@ var statsHelper = window.statsHelpers();
 						}
 					});
 				}, function (e) {
-					console.error(e)
+					console.error(e);
 				}).done();
 			} catch(e) {
-				console.log('Got error!', e)
-				console.log(e.stack)
+				console.log('Got error!', e);
+				console.log(e.stack);
 				throw e;
 			}
 		});
@@ -62,10 +66,10 @@ var statsHelper = window.statsHelpers();
 			chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 				chrome.tabs.sendMessage(tabs[0].id, {
 					event: 'clear-stats'
-				})
+				});
 			});
 		});
-	}
+	};
 
 	Popup.prototype.init = function () {
 		var that = this;
@@ -81,9 +85,8 @@ var statsHelper = window.statsHelpers();
 			step: 1
 		}).on('slide change', function () {
 			var lower =$('.hour-value-lower'),
-				upper = $('.hour-value-upper')
-
-			vals = that.slider.val();
+				upper = $('.hour-value-upper'),
+				vals = that.slider.val();
 
 			chrome.storage.sync.set({
 				'hourRange': vals
@@ -91,41 +94,41 @@ var statsHelper = window.statsHelpers();
 
 			lower.html((parseInt(vals[0], 10)) + ':00');
 			upper.html((parseInt(vals[1], 10)) + ':00');
-		})
+		});
 
-		that.slider.trigger('slide')
+		that.slider.trigger('slide');
 
 		chrome.storage.sync.get('hourRange', function (values) {
 			that.slider.val(values.hourRange).trigger('slide');
-		})
+		});
 
 		$('.time-windows .btn').click(function () {
 			var me = $(this),
 				hours = [];
 			switch (me.attr('data-window')) {
 				case 'all':
-					hours = [0, 24]
+					hours = [0, 24];
 					break;
 				case 'early':
-					hours = [0, 6]
+					hours = [0, 6];
 					break;
 
 				case 'morning':
-					hours = [6, 13]
+					hours = [6, 13];
 					break;
 
 				case 'afternoon':
-					hours = [13, 17]
+					hours = [13, 17];
 					break;
 
 				case 'evening':
-					hours = [17, 24]
+					hours = [17, 24];
 					break;
 			}
 
-			that.slider.val(hours).trigger('change')
+			that.slider.val(hours).trigger('change');
 		});
-	}
+	};
 
 	var fillStats = function (url) {
 
@@ -135,7 +138,6 @@ var statsHelper = window.statsHelpers();
 		statsHelper.getStats(url, {}).then(function (data) {
 			defer.resolve(data);
 		}, function (data) {
-			console.log('got data', data)
 			if (!(data in data)) {
 				defer.reject(data);
 			} else if (data.data === false) {
@@ -149,15 +151,13 @@ var statsHelper = window.statsHelpers();
 			endLoading();
 		});
 		return defer;
-	}
-
-	var initLoading = function () {
+	},
+	initLoading = function () {
 		$('.errors li').hide();
-	}
+	},
+	endLoading = function () {
 
-	var endLoading = function () {
+	};
 
-	}
-
-	popup = new Popup();
-})(jQuery, statsHelper)
+	new Popup();
+})(jQuery, statsHelper);

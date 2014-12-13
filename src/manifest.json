@@ -19,7 +19,7 @@
                 "http://*.bbc.co.uk/tv/*"
             ],
             "js": [
-                "jquery.2.10.js",
+                "lib/jquery.2.10.js",
                 "hit-track.js"
             ],
             "css": [
