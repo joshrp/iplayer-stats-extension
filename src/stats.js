@@ -87,29 +87,16 @@ window.statsHelpers = function () {
 	}
 
 	var processStats = function (results) {
-		var stats = [];
+		var stats = {};
 
 		$.each(results, function (i, stat) {
-			var stat = stat.c,
-				parts = stat[0].split(/[_\-]/),
-				columnNum,
-				rowNum
+			var stat = stat.c
 
 			if (stat[0] == 'Total') {
 				return;
 			}
-			if (parts.length == 2) {
-				columnNum = parts[0];
-				rowNum = parts[1];
-			} else if (parts.length == 3) {
-				columnNum = parts[0]
-				rowNum = parts[1] + '-' + parts[2];
-			}
-
-			column = stats[columnNum] || {};
-			column[rowNum] = column[rowNum] || {};
-			column[rowNum][stat[1]] = stat[2];
-			stats[columnNum] = column;
+			stats[stat[0]] = stats[stat[0]] || {};
+			stats[stat[0]][stat[1]] = stat[2]
 		});
 
 		return stats;
