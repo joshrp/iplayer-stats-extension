@@ -3,18 +3,18 @@
 
 'use strict';
 (function ($) {
-	function getNewCounter() {
-		return $('<div/>', {
-			'class': 'hit-count',
-			html: $('<span class="count"/><div class="overlay"/>')
-		});
-	}
 
 	var formatHour = function (hour) {
 		var n = parseInt(hour).toString(),
 			width = 2;
 
 		return n.length >= width ? n : new Array(width - n.length + 1).join('0') + n;
+	},
+	getNewCounter = function() {
+		return $('<div/>', {
+			'class': 'hit-count',
+			html: $('<span class="count"/><div class="overlay"/>')
+		});
 	},
 	getMaxValue = function (hours, stats) {
 		var max = 0;
@@ -53,13 +53,22 @@
 			var item = $('[data-object-position="'+pos+'"]'),
 				count = getCount(stats[pos], hours),
 				counter = item.find('.hit-count'),
-				height = ((count / maxValue) * 100) + '%';
-			
+				height = ((count / maxValue) * 100) + '%',
+				roundedCount;
+
+			if (count > 1000) {
+				roundedCount = Math.round(((count / 1000) + 0.00001) * 10) / 10;
+				roundedCount += 'k';
+			} else {
+				roundedCount = count;
+			}
+
 			if (item.length === 0) {
 				return;
 			}
 			
-			counter.find('.count').text(count);
+			counter.attr('data-count', count);
+			counter.find('.count').text(roundedCount);
 			counter.find('.overlay').css('max-height', height);
 		});
 
