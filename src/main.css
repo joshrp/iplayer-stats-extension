@@ -6,12 +6,16 @@
 	right:0;
 	-webkit-transition: opacity 1000ms;
 	z-index:100000;
-	background: rgba(100,100,100,0.6);
+	background: rgba(0,0,0,0.6);
 	text-align:center;
 	opacity: 0;
 }
+.group-item .hit-count {
+	background: rgba(0,0,0,0.6);
+}
 
 .hit-count .overlay {
+	display: none;
 	position: absolute;
 	top: auto;
 	left:0;
@@ -26,9 +30,15 @@
 .hit-count .count {
 	font-size: 28pt;
 	color: white;
-	text-shadow: 2px 2px 3px #000;
+	text-shadow: 2px 2px 1px #000;
 	margin-top: 70px;
 	display: block;
+}
+
+.group-item .hit-count .count {
+	position: absolute;
+	right: 10px;
+	top: 0;
 }
 
 .group-item .hit-count .count {

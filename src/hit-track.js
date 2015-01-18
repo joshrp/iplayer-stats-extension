@@ -34,6 +34,41 @@
 		}
 		return totalCount;
 	},
+	calculateColor = function (perc) {
+		perc = (100 - perc);
+		var colours = {
+			r: {
+				top: 200,
+				bottom: 255,
+				func: function (x) {
+					return (Math.pow(x,4)) / 100;
+				}
+			},
+			g: {
+				top: 60,
+				bottom: 255,
+				func: function (x) {
+					return (0.0067143 * Math.pow(x, 2.5) - 0.631429 * x - 1.85714);
+				}
+			},
+			b: {
+				top: 60,
+				bottom: 255,
+				func: function (x) {
+					return (0.0137143 * Math.pow(x, 2) - 0.631429 * x - 3.85713);
+				}
+			}
+		}, values = {};
+
+		$.each(colours, function (colour, data) {
+			var progress = data.func(perc),
+				diff = data.bottom - data.top,
+				increase = (diff * (progress / 100));
+			
+			values[colour] = Math.round(data.top + increase);
+		});
+		return [values.r, values.g, values.b];
+	},
 	run = function ($, stats, hours) {
 		$('.hit-count').css({opacity:1});
 
@@ -41,11 +76,20 @@
 
 		// Give every item a "No Data" overlay
 		$('[data-object-position]').each(function (i, item) {
-			var counter = $(item).find('.hit-count');
+			item = $(item);
+			var counter = item.find('.hit-count');
 			if (counter.length === 0)
 				counter = getNewCounter();
 			counter.find('.count').text('No Data');
-			$(item).append(counter);
+
+			item.css({
+				position: 'relative'
+			});
+			item.find('.primary').append(counter);
+			if (item.parent().is('.collection-list-item')) {
+				item.find('.secondary').append(counter);
+			}
+				
 		})
 
 		/* Find every item with some data and set it up; */;
@@ -53,7 +97,8 @@
 			var item = $('[data-object-position="'+pos+'"]'),
 				count = getCount(stats[pos], hours),
 				counter = item.find('.hit-count'),
-				height = ((count / maxValue) * 100) + '%',
+				percentage = ((count / maxValue) * 100),
+				colour = calculateColor(percentage),
 				roundedCount;
 
 			if (count > 1000) {
@@ -68,8 +113,7 @@
 			}
 			
 			counter.attr('data-count', count);
-			counter.find('.count').text(roundedCount);
-			counter.find('.overlay').css('max-height', height);
+			counter.find('.count').text(roundedCount).css('color', 'rgb(' + colour.join(',') + ')');
 		});
 
 		setTimeout(function () {
